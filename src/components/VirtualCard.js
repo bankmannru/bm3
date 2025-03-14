@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import CardDashboard from './CardDashboard';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function VirtualCard({ card }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showCardNumber, setShowCardNumber] = useState(false);
   
   // Форматируем номер карты для отображения
   const formatCardNumber = (number) => {
@@ -15,6 +16,11 @@ function VirtualCard({ card }) {
   const maskedCardNumber = () => {
     const lastFour = card.cardNumber.slice(-4);
     return `**** **** **** ${lastFour}`;
+  };
+
+  const toggleCardNumber = (e) => {
+    e.stopPropagation(); // Предотвращаем всплытие события
+    setShowCardNumber(!showCardNumber);
   };
 
   return (
@@ -32,19 +38,27 @@ function VirtualCard({ card }) {
             </div>
           </div>
           
-          <div className="card-info">
+          <div className="card-number-container">
             <div className="card-number">
-              {showDetails ? formatCardNumber(card.cardNumber) : maskedCardNumber()}
+              {showCardNumber ? formatCardNumber(card.cardNumber) : maskedCardNumber()}
             </div>
-            <div className="card-details-row">
-              <div className="card-holder">
-                <div className="card-label">ДЕРЖАТЕЛЬ КАРТЫ</div>
-                <div className="card-name">{card.firstName} {card.lastName}</div>
-              </div>
-              <div className="card-expiry-section">
-                <div className="card-label">СРОК ДЕЙСТВИЯ</div>
-                <div className="card-expiry">{card.expiryDate}</div>
-              </div>
+            <button 
+              className="toggle-number-button" 
+              onClick={toggleCardNumber}
+              aria-label={showCardNumber ? "Скрыть номер карты" : "Показать номер карты"}
+            >
+              {showCardNumber ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+          
+          <div className="card-details-row">
+            <div className="card-holder">
+              <div className="card-label">ДЕРЖАТЕЛЬ КАРТЫ</div>
+              <div className="card-name">{card.firstName} {card.lastName}</div>
+            </div>
+            <div className="card-expiry-section">
+              <div className="card-label">СРОК ДЕЙСТВИЯ</div>
+              <div className="card-expiry">{card.expiryDate}</div>
             </div>
           </div>
         </div>
@@ -101,11 +115,15 @@ function VirtualCard({ card }) {
         .virtual-card-container {
           margin-bottom: 2rem;
           perspective: 1000px;
+          width: 100%;
+          max-width: 450px;
+          margin-left: auto;
+          margin-right: auto;
         }
         
         .virtual-card {
           width: 100%;
-          height: 220px;
+          aspect-ratio: 1.6 / 1; /* Соотношение сторон 1.6:1 */
           border-radius: 16px;
           padding: 24px;
           color: white;
@@ -117,11 +135,16 @@ function VirtualCard({ card }) {
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
           overflow: hidden;
+          -webkit-tap-highlight-color: transparent;
         }
         
         .virtual-card:hover {
           transform: translateY(-10px) rotateX(5deg);
           box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+        }
+        
+        .virtual-card:active {
+          transform: translateY(-5px);
         }
         
         .virtual-card::before {
@@ -139,59 +162,73 @@ function VirtualCard({ card }) {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 30px;
+          width: 100%;
         }
         
         .bank-logo {
-          font-size: 1.2rem;
+          font-size: 1.3rem;
           font-weight: 700;
           letter-spacing: 1px;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
-        .card-info {
-          z-index: 1;
+        .card-number-container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 20px 0;
+          width: 100%;
         }
         
         .card-number {
-          font-size: 1.4rem;
+          font-size: 1.5rem;
           letter-spacing: 2px;
-          margin-bottom: 20px;
           font-family: 'Roboto Mono', monospace;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          flex: 1;
+        }
+        
+        .toggle-number-button {
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          padding: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0.8;
+          transition: opacity 0.3s;
+          margin-left: 10px;
+        }
+        
+        .toggle-number-button:hover {
+          opacity: 1;
         }
         
         .card-details-row {
           display: flex;
           justify-content: space-between;
+          width: 100%;
         }
         
         .card-label {
-          font-size: 0.7rem;
+          font-size: 0.75rem;
           opacity: 0.8;
           margin-bottom: 5px;
           letter-spacing: 1px;
         }
         
         .card-name {
-          font-size: 1rem;
+          font-size: 1.1rem;
           font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 1px;
         }
         
         .card-expiry {
-          font-size: 1rem;
+          font-size: 1.1rem;
           font-weight: 500;
-        }
-        
-        .card-type {
-          position: absolute;
-          bottom: 20px;
-          right: 20px;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
         }
         
         .card-details-panel {
@@ -200,6 +237,21 @@ function VirtualCard({ card }) {
           padding: 20px;
           margin-top: -5px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          animation: slideDown 0.3s ease-out;
+          max-width: 450px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         
         .detail-item {
@@ -283,22 +335,84 @@ function VirtualCard({ card }) {
           }
         }
         
+        /* Стили для мобильных устройств */
         @media (max-width: 576px) {
+          .virtual-card-container {
+            max-width: 350px;
+          }
+          
           .virtual-card {
-            height: 200px;
             padding: 20px;
+          }
+          
+          .bank-logo {
+            font-size: 1.1rem;
           }
           
           .card-number {
             font-size: 1.2rem;
+            letter-spacing: 1px;
           }
           
           .card-name, .card-expiry {
             font-size: 0.9rem;
           }
           
+          .card-label {
+            font-size: 0.7rem;
+          }
+          
           .dashboard-overlay {
             padding: 1rem;
+            align-items: flex-start;
+          }
+          
+          .dashboard-container {
+            max-height: 90vh;
+            overflow-y: auto;
+          }
+          
+          .card-details-panel {
+            padding: 15px;
+          }
+          
+          .detail-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+          }
+          
+          .security-note {
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+          }
+          
+          .manage-card-button {
+            padding: 10px;
+            font-size: 0.9rem;
+          }
+        }
+        
+        /* Стили для очень маленьких экранов */
+        @media (max-width: 360px) {
+          .virtual-card-container {
+            max-width: 300px;
+          }
+          
+          .virtual-card {
+            padding: 15px;
+          }
+          
+          .card-number {
+            font-size: 1.1rem;
+          }
+          
+          .card-details-row {
+            flex-direction: column;
+            gap: 8px;
+          }
+          
+          .card-expiry-section {
+            align-self: flex-start;
           }
         }
       `}</style>

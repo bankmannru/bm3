@@ -367,6 +367,10 @@ function Dashboard() {
         
         .dashboard-section {
           margin-bottom: 3rem;
+          background-color: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+          padding: 1.5rem;
         }
         
         .section-header {
@@ -378,6 +382,7 @@ function Dashboard() {
         
         .section-title {
           color: #1a237e;
+          margin: 0;
         }
         
         .create-card-button {
@@ -389,6 +394,7 @@ function Dashboard() {
           font-weight: 500;
           cursor: pointer;
           transition: background-color 0.3s;
+          white-space: nowrap;
         }
         
         .create-card-button:hover {
@@ -403,8 +409,9 @@ function Dashboard() {
         
         .cards-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
           gap: 2rem;
+          justify-items: center;
         }
         
         .no-cards {
@@ -538,6 +545,10 @@ function Dashboard() {
             gap: 1rem;
           }
           
+          .header-right {
+            width: 100%;
+          }
+          
           .section-header {
             flex-direction: column;
             align-items: flex-start;
@@ -546,11 +557,13 @@ function Dashboard() {
           
           .cards-grid {
             grid-template-columns: 1fr;
+            gap: 1.5rem;
           }
           
           .market-promo {
             flex-direction: column;
             text-align: center;
+            padding: 1.5rem;
           }
           
           .market-icon {
@@ -569,15 +582,85 @@ function Dashboard() {
             text-align: center;
             justify-content: center;
           }
+          
+          .dashboard-section {
+            padding: 1rem;
+          }
+          
+          .market-link {
+            width: 100%;
+            text-align: center;
+          }
+          
+          .market-actions {
+            flex-direction: column;
+            width: 100%;
+          }
+          
+          .unread-messages-badge {
+            width: 100%;
+            text-align: center;
+          }
+          
+          .alpha-banner {
+            padding: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            text-align: center;
+          }
+          
+          .alpha-text {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 0.5rem;
+          }
+          
+          .info-button {
+            margin-top: 0.5rem;
+          }
         }
         
         @media (max-width: 992px) {
           .market-sections {
             grid-template-columns: 1fr;
+            gap: 1.5rem;
           }
           
           .user-chats-container {
-            margin-top: 2rem;
+            margin-top: 0;
+          }
+          
+          .cards-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .dashboard-title {
+            font-size: 1.5rem;
+          }
+          
+          .dashboard-welcome {
+            font-size: 0.9rem;
+          }
+          
+          .section-title {
+            font-size: 1.2rem;
+          }
+          
+          .market-info h3 {
+            font-size: 1.2rem;
+          }
+          
+          .market-info p {
+            font-size: 0.9rem;
+          }
+          
+          .create-card-button, 
+          .market-link, 
+          .admin-button {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
           }
         }
         

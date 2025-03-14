@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import AlphaInfo from './AlphaInfo';
-import { checkAlphaStatus } from '../firebase';
+import Auth from './Auth';
+import { checkAlphaStatus, auth } from '../firebase';
 
 function Hero() {
   const [showAlphaInfo, setShowAlphaInfo] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [user, setUser] = useState(null);
   const [alphaStatus, setAlphaStatus] = useState({
     isAlpha: true,
     loading: true
@@ -30,6 +33,38 @@ function Hero() {
     
     checkStatus();
   }, []);
+  
+  useEffect(() => {
+    // Слушаем изменения состояния аутентификации
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+
+    // Отписываемся при размонтировании компонента
+    return () => unsubscribe();
+  }, []);
+  
+  const handleOpenAccount = () => {
+    if (user) {
+      // Если пользователь уже авторизован, перенаправляем в личный кабинет
+      window.location.href = '/dashboard';
+    } else {
+      // Если не авторизован, показываем форму авторизации
+      setShowAuth(true);
+    }
+  };
+  
+  const handleLearnMore = () => {
+    // Прокрутка к разделу с услугами
+    const featuresSection = document.querySelector('.features');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
+  const closeAuth = () => {
+    setShowAuth(false);
+  };
   
   if (alphaStatus.loading) {
     return <div>Загрузка...</div>;
@@ -61,16 +96,17 @@ function Hero() {
           Ваш надежный финансовый партнер для всех банковских решений
         </p>
         <div className="hero-buttons">
-          <button className="primary-button">
+          <button className="primary-button" onClick={handleOpenAccount}>
             Открыть счёт
           </button>
-          <button className="secondary-button">
+          <button className="secondary-button" onClick={handleLearnMore}>
             Узнать больше
           </button>
         </div>
       </div>
       
       {showAlphaInfo && <AlphaInfo onClose={() => setShowAlphaInfo(false)} />}
+      {showAuth && <Auth onClose={closeAuth} />}
 
       <style jsx>{`
         .hero {

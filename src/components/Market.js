@@ -206,7 +206,7 @@ function Market({ user, initialSelectedItem = null, initialShowChat = false }) {
             </div>
           </div>
           
-          <div className="filter-row">
+          <div className="filter-row price-row">
             <div className="filter-group">
               <label htmlFor="minPrice">Цена от (МР)</label>
               <input
@@ -306,232 +306,171 @@ function Market({ user, initialSelectedItem = null, initialShowChat = false }) {
         </>
       )}
 
-      {showCreateItem && user && (
-        <div className="create-item-modal-overlay" onClick={() => setShowCreateItem(false)}>
-          <div className="create-item-modal" onClick={e => e.stopPropagation()}>
-            <CreateMarketItem 
-              user={user}
-              userCards={userCards}
-              onItemCreated={handleItemCreated}
-              onClose={() => setShowCreateItem(false)}
-            />
-          </div>
-        </div>
+      {showCreateItem && (
+        <CreateMarketItem 
+          user={user}
+          userCards={userCards}
+          onClose={() => setShowCreateItem(false)}
+          onItemCreated={handleItemCreated}
+        />
       )}
 
       <style jsx>{`
         .market {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 2rem;
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
         }
-        
+
         .market-header {
-          margin-bottom: 2rem;
-          text-align: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid #e0e0e0;
         }
-        
+
         .market-title {
+          margin: 0 0 0.5rem;
           color: #1a237e;
-          font-size: 2.5rem;
-          margin-bottom: 0.5rem;
+          font-size: 1.5rem;
         }
-        
+
         .market-description {
+          margin: 0;
           color: #616161;
-          font-size: 1.1rem;
         }
-        
+
         .market-actions {
+          padding: 1.5rem;
+          border-bottom: 1px solid #e0e0e0;
           display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          margin-bottom: 2rem;
-          flex-wrap: wrap;
+          flex-direction: column;
           gap: 1rem;
         }
-        
+
         .filter-section {
-          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          width: 100%;
           background-color: #f5f5f5;
-          padding: 1.5rem;
+          padding: 1rem;
           border-radius: 8px;
         }
-        
+
         .filter-row {
           display: flex;
           gap: 1rem;
-          margin-bottom: 1rem;
           flex-wrap: wrap;
         }
-        
-        .filter-row:last-child {
-          margin-bottom: 0;
+
+        .price-row {
+          align-items: flex-end;
         }
-        
+
         .filter-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
           flex: 1;
           min-width: 200px;
         }
-        
+
         .filter-group label {
-          display: block;
-          margin-bottom: 0.5rem;
           font-weight: 500;
-          color: #616161;
+          color: #1a237e;
         }
-        
+
         .filter-group input,
         .filter-group select {
-          width: 100%;
           padding: 0.75rem;
           border: 1px solid #e0e0e0;
           border-radius: 4px;
           font-size: 1rem;
+          width: 100%;
         }
-        
+
         .filter-buttons {
           display: flex;
           gap: 0.5rem;
-          align-items: flex-end;
+          margin-left: auto;
         }
-        
-        .apply-filter-button,
-        .reset-filter-button {
+
+        .apply-filter-button {
+          background-color: #1a237e;
+          color: white;
+          border: none;
           padding: 0.75rem 1.5rem;
           border-radius: 4px;
           font-weight: 500;
           cursor: pointer;
           transition: background-color 0.3s;
         }
-        
-        .apply-filter-button {
-          background-color: #1a237e;
-          color: white;
-          border: none;
-        }
-        
+
         .apply-filter-button:hover {
           background-color: #3f51b5;
         }
-        
+
         .reset-filter-button {
           background-color: transparent;
           color: #616161;
           border: 1px solid #e0e0e0;
+          padding: 0.75rem 1.5rem;
+          border-radius: 4px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.3s;
         }
-        
+
         .reset-filter-button:hover {
           background-color: #f5f5f5;
         }
-        
+
         .create-item-button {
           background-color: #4caf50;
           color: white;
           border: none;
           padding: 0.75rem 1.5rem;
-          border-radius: 28px;
+          border-radius: 4px;
           font-weight: 500;
           cursor: pointer;
           transition: background-color 0.3s;
-          white-space: nowrap;
+          align-self: flex-end;
         }
-        
+
         .create-item-button:hover {
           background-color: #66bb6a;
         }
-        
-        .error-message {
-          background-color: #ffebee;
-          color: #c62828;
-          padding: 1rem;
-          border-radius: 4px;
-          margin-bottom: 1.5rem;
-        }
-        
-        .loading {
-          text-align: center;
-          padding: 2rem;
-          color: #616161;
-        }
-        
+
         .market-items-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 2rem;
+          gap: 1.5rem;
+          padding: 1.5rem;
         }
-        
-        .no-items {
-          text-align: center;
+
+        .market-item-wrapper {
+          cursor: pointer;
+          transition: transform 0.3s;
+        }
+
+        .market-item-wrapper:hover {
+          transform: translateY(-4px);
+        }
+
+        .loading, .error-message, .no-items {
           padding: 3rem;
-          background-color: #f5f5f5;
-          border-radius: 8px;
+          text-align: center;
           color: #616161;
         }
-        
-        @media (max-width: 768px) {
-          .market {
-            padding: 1rem;
-          }
-          
-          .market-title {
-            font-size: 2rem;
-          }
-          
-          .filter-row {
-            flex-direction: column;
-            gap: 1rem;
-          }
-          
-          .filter-group {
-            width: 100%;
-          }
-          
-          .market-actions {
-            flex-direction: column;
-            align-items: stretch;
-          }
-          
-          .create-item-button {
-            width: 100%;
-          }
+
+        .error-message {
+          color: #f44336;
         }
-        
-        .create-item-modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 1rem;
-        }
-        
-        .create-item-modal {
-          width: 100%;
-          max-width: 600px;
-          animation: fadeIn 0.3s ease-out;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
+
         .selected-item-container {
-          margin-top: 1.5rem;
+          padding: 1.5rem;
         }
-        
+
         .back-button {
           background: none;
           border: none;
@@ -544,23 +483,31 @@ function Market({ user, initialSelectedItem = null, initialShowChat = false }) {
           align-items: center;
           transition: color 0.3s;
         }
-        
+
         .back-button:hover {
           color: #3f51b5;
         }
-        
-        .selected-item {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        
-        .market-item-wrapper {
-          cursor: pointer;
-          transition: transform 0.3s;
-        }
-        
-        .market-item-wrapper:hover {
-          transform: translateY(-5px);
+
+        @media (max-width: 768px) {
+          .filter-row {
+            flex-direction: column;
+          }
+
+          .filter-buttons {
+            margin-left: 0;
+            margin-top: 1rem;
+            justify-content: space-between;
+            width: 100%;
+          }
+
+          .apply-filter-button,
+          .reset-filter-button {
+            flex: 1;
+          }
+
+          .market-items-grid {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </div>

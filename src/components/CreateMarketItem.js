@@ -48,6 +48,25 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   
+  // Блокируем прокрутку фона при открытии модального окна
+  useEffect(() => {
+    // Сохраняем текущую позицию прокрутки
+    const scrollY = window.scrollY;
+    
+    // Блокируем прокрутку body
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    
+    // Восстанавливаем прокрутку при закрытии
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+  
   // Проверка валидности формы
   const isFormValid = () => {
     return (
@@ -115,176 +134,197 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
   };
 
   return (
-    <div className="create-market-item">
-      <div className="modal-header">
-        <h2>Создание нового объявления</h2>
-        <button className="close-button" onClick={onClose}>×</button>
-      </div>
-      
-      {success ? (
-        <div className="success-message">
-          <div className="success-icon">✓</div>
-          <h3>Товар успешно создан!</h3>
-          <p>Ваше объявление опубликовано на маркете</p>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="create-market-item" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Создание нового объявления</h2>
+          <button className="close-button" onClick={onClose}>×</button>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="form-info">
-            <p className="commission-info">
-              <strong>Комиссия за создание объявления:</strong> 15 МР
-            </p>
-          </div>
-          
-          {error && <div className="error-message">{error}</div>}
-          
-          <div className="form-group">
-            <label htmlFor="title">Название товара *</label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Введите название товара"
-              required
-              maxLength={100}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="description">Описание *</label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Подробно опишите товар"
-              required
-              rows={5}
-              maxLength={1000}
-            />
-            <div className="char-counter">{description.length}/1000</div>
-          </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="price">Цена (МР) *</label>
-              <input
-                type="number"
-                id="price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="0"
-                required
-                min="1"
-                max="1000000"
-              />
+        
+        <div className="modal-content">
+          {success ? (
+            <div className="success-message">
+              <div className="success-icon">✓</div>
+              <h3>Товар успешно создан!</h3>
+              <p>Ваше объявление опубликовано на маркете</p>
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="category">Категория *</label>
-              <select
-                id="category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
-              >
-                <option value="">Выберите категорию</option>
-                {categories.map(cat => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.icon} {cat.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="condition">Состояние *</label>
-              <select
-                id="condition"
-                value={condition}
-                onChange={(e) => setCondition(e.target.value)}
-                required
-              >
-                <option value="">Выберите состояние</option>
-                {CONDITIONS.map(cond => (
-                  <option key={cond} value={cond}>{cond}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="location">Местоположение</label>
-              <input
-                type="text"
-                id="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Город, район (необязательно)"
-              />
-            </div>
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="imageUrl">URL изображения</label>
-            <input
-              type="url"
-              id="imageUrl"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://example.com/image.jpg (необязательно)"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="card-select">Выберите карту для оплаты комиссии *</label>
-            <select
-              id="card-select"
-              value={selectedCard}
-              onChange={(e) => setSelectedCard(e.target.value)}
-              required
-            >
-              <option value="">Выберите карту</option>
-              {userCards.map(card => (
-                <option 
-                  key={card.id} 
-                  value={card.id}
-                  disabled={card.balance < 15}
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="form-info">
+                <p className="commission-info">
+                  <strong>Комиссия за создание объявления:</strong> 15 МР
+                </p>
+              </div>
+              
+              {error && <div className="error-message">{error}</div>}
+              
+              <div className="form-group">
+                <label htmlFor="title">Название товара *</label>
+                <input
+                  type="text"
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Введите название товара"
+                  required
+                  maxLength={100}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="description">Описание *</label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Подробно опишите товар"
+                  required
+                  rows={5}
+                  maxLength={1000}
+                />
+                <div className="char-counter">{description.length}/1000</div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="price">Цена (МР) *</label>
+                  <input
+                    type="number"
+                    id="price"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="0"
+                    required
+                    min="1"
+                    max="1000000"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="category">Категория *</label>
+                  <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    <option value="">Выберите категорию</option>
+                    {categories.map(cat => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="condition">Состояние *</label>
+                  <select
+                    id="condition"
+                    value={condition}
+                    onChange={(e) => setCondition(e.target.value)}
+                    required
+                  >
+                    <option value="">Выберите состояние</option>
+                    {CONDITIONS.map(cond => (
+                      <option key={cond} value={cond}>{cond}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="location">Местоположение</label>
+                  <input
+                    type="text"
+                    id="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Город, район (необязательно)"
+                  />
+                </div>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="imageUrl">URL изображения</label>
+                <input
+                  type="url"
+                  id="imageUrl"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://example.com/image.jpg (необязательно)"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="card-select">Выберите карту для оплаты комиссии *</label>
+                <select
+                  id="card-select"
+                  value={selectedCard}
+                  onChange={(e) => setSelectedCard(e.target.value)}
+                  required
                 >
-                  **** {card.cardNumber.slice(-4)} - {new Intl.NumberFormat('ru-RU').format(card.balance)} МР
-                  {card.balance < 15 ? ' (недостаточно средств)' : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="form-actions">
-            <button 
-              type="button" 
-              className="cancel-button"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Отмена
-            </button>
-            <button 
-              type="submit" 
-              className="submit-button"
-              disabled={loading || !isFormValid()}
-            >
-              {loading ? 'Создание...' : 'Создать объявление'}
-            </button>
-          </div>
-        </form>
-      )}
+                  <option value="">Выберите карту</option>
+                  {userCards.map(card => (
+                    <option 
+                      key={card.id} 
+                      value={card.id}
+                      disabled={card.balance < 15}
+                    >
+                      **** {card.cardNumber.slice(-4)} - {new Intl.NumberFormat('ru-RU').format(card.balance)} МР
+                      {card.balance < 15 ? ' (недостаточно средств)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  className="cancel-button"
+                  onClick={onClose}
+                  disabled={loading}
+                >
+                  Отмена
+                </button>
+                <button 
+                  type="submit" 
+                  className="submit-button"
+                  disabled={loading || !isFormValid()}
+                >
+                  {loading ? 'Создание...' : 'Создать объявление'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
 
       <style jsx>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1200;
+          padding: 1rem;
+        }
+        
         .create-market-item {
           background-color: white;
           border-radius: 8px;
           overflow: hidden;
           width: 100%;
           max-width: 600px;
+          max-height: 90vh;
+          display: flex;
+          flex-direction: column;
         }
         
         .modal-header {
@@ -293,12 +333,20 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
           align-items: center;
           padding: 1.5rem;
           border-bottom: 1px solid #e0e0e0;
+          flex-shrink: 0;
         }
         
         .modal-header h2 {
           margin: 0;
           color: #1a237e;
           font-size: 1.5rem;
+        }
+        
+        .modal-content {
+          flex: 1;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 1.5rem;
         }
         
         .close-button {
@@ -312,10 +360,6 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
         
         .close-button:hover {
           color: #f44336;
-        }
-        
-        form {
-          padding: 1.5rem;
         }
         
         .form-info {
@@ -450,9 +494,21 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
           margin: 0;
         }
         
-        .category-icon {
-          margin-right: 8px;
-          vertical-align: middle;
+        @media (max-width: 768px) {
+          .form-row {
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+          
+          .modal-overlay {
+            padding: 0;
+          }
+          
+          .create-market-item {
+            height: 100%;
+            max-height: 100%;
+            border-radius: 0;
+          }
         }
       `}</style>
     </div>
