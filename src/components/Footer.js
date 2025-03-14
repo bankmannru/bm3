@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaExclamationTriangle } from 'react-icons/fa';
 
 function Footer() {
   return (
@@ -10,6 +10,10 @@ function Footer() {
           <p className="footer-description">
             Ваш надежный финансовый партнер с инновационными решениями для всех ваших банковских потребностей.
           </p>
+          <div className="alpha-notice">
+            <FaExclamationTriangle className="alpha-icon" />
+            <p>Альфа-версия.</p>
+          </div>
         </div>
 
         <div className="footer-section">
@@ -45,6 +49,9 @@ function Footer() {
       <div className="footer-bottom">
         <p className="copyright">
           © 2025 Банк Маннру. Никакие права не защищены.
+        </p>
+        <p className="alpha-version">
+          <FaExclamationTriangle className="alpha-icon-small" /> Альфа-версия. Ограничения можно отключить через Firestore.
         </p>
       </div>
 
@@ -115,10 +122,46 @@ function Footer() {
           opacity: 0.8;
           margin: 0;
         }
+        
+        .alpha-version {
+          opacity: 0.8;
+          margin: 0.5rem 0 0;
+          font-size: 0.8rem;
+          color: #ff9800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+        
+        .alpha-icon-small {
+          font-size: 0.8rem;
+        }
 
         .contact-icon {
           margin-right: 8px;
           color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .alpha-notice {
+          margin-top: 1rem;
+          padding: 0.75rem;
+          background-color: rgba(255, 152, 0, 0.2);
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        
+        .alpha-notice p {
+          margin: 0;
+          font-size: 0.9rem;
+          color: #ffcc80;
+        }
+        
+        .alpha-icon {
+          color: #ff9800;
+          font-size: 1rem;
         }
 
         @media (max-width: 768px) {
@@ -132,6 +175,10 @@ function Footer() {
 
           .footer-section {
             text-align: center;
+          }
+          
+          .alpha-notice {
+            justify-content: center;
           }
         }
       `}</style>

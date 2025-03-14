@@ -1,17 +1,54 @@
-import React, { useState } from 'react';
-import { loginUser, registerUser } from '../firebase';
+import React, { useState, useEffect } from 'react';
+import { loginUser, registerUser, checkAlphaStatus } from '../firebase';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 function Auth({ onClose }) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [testerCode, setTesterCode] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [alphaStatus, setAlphaStatus] = useState({
+    isAlpha: true,
+    testerCode: '',
+    loading: true
+  });
+
+  useEffect(() => {
+    // Проверяем alpha-статус при загрузке компонента
+    const checkStatus = async () => {
+      try {
+        const result = await checkAlphaStatus();
+        setAlphaStatus({
+          isAlpha: result.isAlpha,
+          testerCode: result.testerCode,
+          loading: false
+        });
+      } catch (err) {
+        console.error('Ошибка при проверке alpha-статуса:', err);
+        setAlphaStatus({
+          isAlpha: true, // По умолчанию считаем, что alpha включена
+          testerCode: '',
+          loading: false
+        });
+      }
+    };
+    
+    checkStatus();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    // Проверка кода тестера только если alpha включена
+    if (alphaStatus.isAlpha && testerCode !== alphaStatus.testerCode) {
+      setError('Неверный код тестера. Для доступа к альфа-версии введите правильный код доступа.');
+      setLoading(false);
+      return;
+    }
 
     try {
       let result;
@@ -42,6 +79,13 @@ function Auth({ onClose }) {
         <button className="close-button" onClick={onClose}>×</button>
         <h2 className="auth-title">{isLogin ? 'Вход в личный кабинет' : 'Регистрация'}</h2>
         
+        {alphaStatus.isAlpha && (
+          <div className="alpha-notice">
+            <FaExclamationTriangle className="alpha-icon" />
+            <p>Это альфа-версия сайта. Для доступа требуется код тестера.</p>
+          </div>
+        )}
+        
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">
@@ -67,12 +111,26 @@ function Auth({ onClose }) {
             />
           </div>
           
+          {alphaStatus.isAlpha && (
+            <div className="form-group">
+              <label htmlFor="testerCode">Код тестера</label>
+              <input
+                type="text"
+                id="testerCode"
+                value={testerCode}
+                onChange={(e) => setTesterCode(e.target.value)}
+                placeholder="Введите код тестера"
+                required
+              />
+            </div>
+          )}
+          
           <button 
             type="submit" 
             className="submit-button" 
-            disabled={loading}
+            disabled={loading || alphaStatus.loading}
           >
-            {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
+            {loading || alphaStatus.loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
           </button>
         </form>
         
@@ -123,6 +181,28 @@ function Auth({ onClose }) {
           color: #1a237e;
           margin-bottom: 1.5rem;
           text-align: center;
+        }
+        
+        .alpha-notice {
+          background-color: #fff3e0;
+          border-left: 4px solid #ff9800;
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        
+        .alpha-notice p {
+          margin: 0;
+          font-size: 0.9rem;
+          color: #e65100;
+        }
+        
+        .alpha-icon {
+          color: #ff9800;
+          font-size: 1.25rem;
+          flex-shrink: 0;
         }
 
         .error-message {

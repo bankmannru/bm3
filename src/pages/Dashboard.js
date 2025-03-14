@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { auth, getUserCards, getUnreadMessagesCount } from '../firebase';
+import { auth, getUserCards, getUnreadMessagesCount, checkAlphaStatus, checkIsAdmin } from '../firebase';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import VirtualCard from '../components/VirtualCard';
 import CreateCard from '../components/CreateCard';
 import MarketTransactions from '../components/MarketTransactions';
 import UserChats from '../components/UserChats';
+import AlphaInfo from '../components/AlphaInfo';
+import AdminPanel from '../components/AdminPanel';
+import AdminCreator from '../components/AdminCreator';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaExclamationTriangle, FaInfoCircle, FaUserShield, FaUserSecret } from 'react-icons/fa';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -16,6 +19,36 @@ function Dashboard() {
   const [error, setError] = useState(null);
   const [showCreateCard, setShowCreateCard] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [showAlphaInfo, setShowAlphaInfo] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showAdminCreator, setShowAdminCreator] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [alphaStatus, setAlphaStatus] = useState({
+    isAlpha: true,
+    loading: true
+  });
+  const [secretKeyPresses, setSecretKeyPresses] = useState(0);
+
+  useEffect(() => {
+    // Проверяем alpha-статус при загрузке компонента
+    const checkStatus = async () => {
+      try {
+        const result = await checkAlphaStatus();
+        setAlphaStatus({
+          isAlpha: result.isAlpha,
+          loading: false
+        });
+      } catch (err) {
+        console.error('Ошибка при проверке alpha-статуса:', err);
+        setAlphaStatus({
+          isAlpha: true, // По умолчанию считаем, что alpha включена
+          loading: false
+        });
+      }
+    };
+    
+    checkStatus();
+  }, []);
 
   useEffect(() => {
     // Проверяем авторизацию
@@ -26,6 +59,8 @@ function Dashboard() {
         await loadUserCards(currentUser.uid);
         // Загружаем количество непрочитанных сообщений
         await loadUnreadMessages(currentUser.uid);
+        // Проверяем, является ли пользователь администратором
+        await checkAdminStatus(currentUser.uid);
       } else {
         // Если пользователь не авторизован, перенаправляем на главную
         window.location.href = '/';
@@ -34,6 +69,41 @@ function Dashboard() {
 
     return () => unsubscribe();
   }, []);
+
+  // Обработчик секретной комбинации для открытия AdminCreator
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Если нажата клавиша 'A' и зажат Ctrl+Shift
+      if (e.key === 'A' && e.ctrlKey && e.shiftKey) {
+        setSecretKeyPresses(prev => prev + 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  // Если секретная комбинация нажата 3 раза, показываем AdminCreator
+  useEffect(() => {
+    if (secretKeyPresses >= 3) {
+      setShowAdminCreator(true);
+      setSecretKeyPresses(0);
+    }
+  }, [secretKeyPresses]);
+
+  const checkAdminStatus = async (userId) => {
+    try {
+      const result = await checkIsAdmin(userId);
+      if (result.success) {
+        setIsAdmin(result.isAdmin);
+      }
+    } catch (err) {
+      console.error('Ошибка при проверке статуса администратора:', err);
+    }
+  };
 
   const loadUserCards = async (userId) => {
     setLoading(true);
@@ -67,7 +137,7 @@ function Dashboard() {
     setShowCreateCard(false);
   };
 
-  if (!user) {
+  if (!user || alphaStatus.loading) {
     return <div className="loading">Загрузка...</div>;
   }
 
@@ -75,10 +145,41 @@ function Dashboard() {
     <div className="dashboard">
       <Navbar />
       
+      {alphaStatus.isAlpha && (
+        <div className="alpha-banner">
+          <FaExclamationTriangle className="alpha-icon" />
+          <div className="alpha-text">
+            <strong>АЛЬФА-ВЕРСИЯ</strong> - Вы используете тестовую версию сайта. Ограничения можно отключить через Firestore.
+          </div>
+          <button 
+            className="info-button" 
+            onClick={() => setShowAlphaInfo(true)}
+            title="Подробнее об альфа-версии"
+          >
+            <FaInfoCircle />
+          </button>
+        </div>
+      )}
+      
       <div className="dashboard-container">
         <div className="dashboard-header">
-          <h1 className="dashboard-title">Личный кабинет</h1>
-          <p className="dashboard-welcome">Добро пожаловать, {user.email}</p>
+          <div className="header-left">
+            <h1 className="dashboard-title">Личный кабинет</h1>
+            <p className="dashboard-welcome">Добро пожаловать, {user.email}</p>
+          </div>
+          
+          {isAdmin && (
+            <div className="header-right">
+              <button 
+                className="admin-button"
+                onClick={() => setShowAdminPanel(true)}
+                title="Панель администратора"
+              >
+                <FaUserShield className="admin-icon" />
+                Панель администратора
+              </button>
+            </div>
+          )}
         </div>
         
         {error && <div className="error-message">{error}</div>}
@@ -159,12 +260,53 @@ function Dashboard() {
           onClose={() => setShowCreateCard(false)} 
         />
       )}
+      
+      {showAlphaInfo && <AlphaInfo onClose={() => setShowAlphaInfo(false)} />}
+      
+      {showAdminPanel && <AdminPanel onClose={() => setShowAdminPanel(false)} />}
+      
+      {showAdminCreator && (
+        <AdminCreator 
+          userId={user.uid} 
+          onClose={() => setShowAdminCreator(false)} 
+        />
+      )}
+
+      <div className="secret-hint">
+        <FaUserSecret className="secret-icon" />
+        <span>Нажмите Ctrl+Shift+A три раза для доступа к секретной функции</span>
+      </div>
 
       <style jsx>{`
         .dashboard {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
+          position: relative;
+          padding-top: 3rem;
+        }
+        
+        .alpha-banner {
+          position: fixed;
+          top: 60px;
+          left: 0;
+          right: 0;
+          background-color: rgba(244, 67, 54, 0.9);
+          color: white;
+          padding: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          z-index: 999;
+        }
+        
+        .alpha-icon {
+          font-size: 1.25rem;
+        }
+        
+        .alpha-text {
+          font-size: 0.9rem;
         }
         
         .dashboard-container {
@@ -178,6 +320,9 @@ function Dashboard() {
           margin-bottom: 2rem;
           border-bottom: 1px solid #e0e0e0;
           padding-bottom: 1rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
         
         .dashboard-title {
@@ -188,6 +333,28 @@ function Dashboard() {
         .dashboard-welcome {
           color: #616161;
           font-size: 1.1rem;
+        }
+        
+        .admin-button {
+          background-color: #ff9800;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 28px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        
+        .admin-button:hover {
+          background-color: #f57c00;
+        }
+        
+        .admin-icon {
+          font-size: 1.25rem;
         }
         
         .error-message {
@@ -323,6 +490,31 @@ function Dashboard() {
           animation: pulse 2s infinite;
         }
         
+        .secret-hint {
+          position: fixed;
+          bottom: 10px;
+          right: 10px;
+          background-color: rgba(0, 0, 0, 0.7);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          opacity: 0.3;
+          transition: opacity 0.3s;
+          z-index: 1000;
+        }
+        
+        .secret-hint:hover {
+          opacity: 1;
+        }
+        
+        .secret-icon {
+          color: #ff9800;
+        }
+        
         @keyframes pulse {
           0% {
             box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
@@ -338,6 +530,12 @@ function Dashboard() {
         @media (max-width: 768px) {
           .dashboard-container {
             padding: 1rem;
+          }
+          
+          .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
           }
           
           .section-header {
@@ -359,6 +557,18 @@ function Dashboard() {
             margin-left: 0;
             margin-top: 1.5rem;
           }
+          
+          .admin-button {
+            width: 100%;
+            justify-content: center;
+          }
+          
+          .secret-hint {
+            left: 10px;
+            right: 10px;
+            text-align: center;
+            justify-content: center;
+          }
         }
         
         @media (max-width: 992px) {
@@ -369,6 +579,24 @@ function Dashboard() {
           .user-chats-container {
             margin-top: 2rem;
           }
+        }
+        
+        .info-button {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.25rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.25rem;
+          border-radius: 50%;
+          transition: background-color 0.3s;
+        }
+        
+        .info-button:hover {
+          background-color: rgba(255, 255, 255, 0.2);
         }
       `}</style>
     </div>

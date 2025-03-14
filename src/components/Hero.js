@@ -1,8 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
+import AlphaInfo from './AlphaInfo';
+import { checkAlphaStatus } from '../firebase';
 
 function Hero() {
+  const [showAlphaInfo, setShowAlphaInfo] = useState(false);
+  const [alphaStatus, setAlphaStatus] = useState({
+    isAlpha: true,
+    loading: true
+  });
+  
+  useEffect(() => {
+    // Проверяем alpha-статус при загрузке компонента
+    const checkStatus = async () => {
+      try {
+        const result = await checkAlphaStatus();
+        setAlphaStatus({
+          isAlpha: result.isAlpha,
+          loading: false
+        });
+      } catch (err) {
+        console.error('Ошибка при проверке alpha-статуса:', err);
+        setAlphaStatus({
+          isAlpha: true, // По умолчанию считаем, что alpha включена
+          loading: false
+        });
+      }
+    };
+    
+    checkStatus();
+  }, []);
+  
+  if (alphaStatus.loading) {
+    return <div>Загрузка...</div>;
+  }
+  
   return (
     <section className="hero">
+      {alphaStatus.isAlpha && (
+        <div className="alpha-banner">
+          <FaExclamationTriangle className="alpha-icon" />
+          <div className="alpha-text">
+            <strong>АЛЬФА-ВЕРСИЯ</strong> - Для доступа к сайту введите код тестера.
+          </div>
+          <button 
+            className="info-button" 
+            onClick={() => setShowAlphaInfo(true)}
+            title="Подробнее об альфа-версии"
+          >
+            <FaInfoCircle />
+          </button>
+        </div>
+      )}
+      
       <div className="hero-content">
         <h1 className="hero-title">
           Добро пожаловать в Банк Маннру
@@ -19,6 +69,8 @@ function Hero() {
           </button>
         </div>
       </div>
+      
+      {showAlphaInfo && <AlphaInfo onClose={() => setShowAlphaInfo(false)} />}
 
       <style jsx>{`
         .hero {
@@ -28,13 +80,57 @@ function Hero() {
           text-align: center;
           min-height: 80vh;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
+          position: relative;
+        }
+
+        .alpha-banner {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          background-color: rgba(244, 67, 54, 0.9);
+          color: white;
+          padding: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          z-index: 10;
+        }
+        
+        .alpha-icon {
+          font-size: 1.25rem;
+        }
+        
+        .alpha-text {
+          font-size: 0.9rem;
+        }
+        
+        .info-button {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.25rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.25rem;
+          border-radius: 50%;
+          transition: background-color 0.3s;
+        }
+        
+        .info-button:hover {
+          background-color: rgba(255, 255, 255, 0.2);
         }
 
         .hero-content {
           max-width: 800px;
           margin: 0 auto;
+          padding-top: 2rem;
         }
 
         .hero-title {
@@ -110,6 +206,10 @@ function Hero() {
           .primary-button,
           .secondary-button {
             width: 100%;
+          }
+          
+          .alpha-text {
+            font-size: 0.8rem;
           }
         }
       `}</style>

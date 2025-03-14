@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { getDatabase } from "firebase/database";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, doc, getDoc, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, doc, getDoc, updateDoc, serverTimestamp, deleteDoc, setDoc } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -642,6 +642,91 @@ export const markMessagesAsRead = async (itemId, userId) => {
     };
   } catch (error) {
     console.error("Ошибка при маркировке сообщений как прочитанных:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Функция для проверки alpha-статуса и получения кода тестера
+export const checkAlphaStatus = async () => {
+  try {
+    const settingsRef = doc(firestore, "settings", "alpha");
+    const settingsSnap = await getDoc(settingsRef);
+    
+    if (settingsSnap.exists()) {
+      const settings = settingsSnap.data();
+      return { 
+        success: true, 
+        isAlpha: settings.enabled === true,
+        testerCode: settings.testerCode || ""
+      };
+    } else {
+      // Если документ не существует, создаем его с дефолтными значениями
+      await setDoc(settingsRef, {
+        enabled: true,
+        testerCode: "882"
+      });
+      return { 
+        success: true, 
+        isAlpha: true,
+        testerCode: "882"
+      };
+    }
+  } catch (error) {
+    console.error("Ошибка при проверке alpha-статуса:", error);
+    return { 
+      success: false, 
+      isAlpha: true, // По умолчанию считаем, что alpha включена
+      testerCode: "",
+      error: error.message 
+    };
+  }
+};
+
+// Функция для проверки, является ли пользователь администратором
+export const checkIsAdmin = async (userId) => {
+  try {
+    if (!userId) {
+      return { success: false, isAdmin: false };
+    }
+    
+    // Получаем документ пользователя из коллекции admins
+    const adminRef = doc(firestore, "admins", userId);
+    const adminSnap = await getDoc(adminRef);
+    
+    // Если документ существует и поле isAdmin равно true, то пользователь - администратор
+    if (adminSnap.exists() && adminSnap.data().isAdmin === true) {
+      return { success: true, isAdmin: true };
+    }
+    
+    return { success: true, isAdmin: false };
+  } catch (error) {
+    console.error("Ошибка при проверке статуса администратора:", error);
+    return { success: false, isAdmin: false, error: error.message };
+  }
+};
+
+// Функция для создания администратора (только для тестирования)
+export const createAdmin = async (userId, secretKey) => {
+  try {
+    // Проверяем секретный ключ (для безопасности)
+    if (secretKey !== 'mannru_admin_secret') {
+      return { success: false, error: 'Неверный секретный ключ' };
+    }
+    
+    if (!userId) {
+      return { success: false, error: 'Не указан ID пользователя' };
+    }
+    
+    // Создаем или обновляем документ администратора
+    const adminRef = doc(firestore, "admins", userId);
+    await setDoc(adminRef, {
+      isAdmin: true,
+      createdAt: serverTimestamp()
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Ошибка при создании администратора:", error);
     return { success: false, error: error.message };
   }
 };
