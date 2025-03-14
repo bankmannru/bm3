@@ -1,13 +1,36 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+// Импортируем Firebase
+import './firebase';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
+    <style jsx global>{`
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 700;
+      }
+
+      p, a, button, input, textarea {
+        font-family: 'Roboto', sans-serif;
+      }
+    `}</style>
   </React.StrictMode>
 );
 
