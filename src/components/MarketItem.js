@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { purchaseMarketItem, deleteMarketItem } from '../firebase';
 import ItemChat from './ItemChat';
+import { 
+  FaShoppingBag, 
+  FaLaptop, 
+  FaMobile, 
+  FaHome, 
+  FaCar, 
+  FaTshirt, 
+  FaChild, 
+  FaBook, 
+  FaFootballBall, 
+  FaTools, 
+  FaQuestion 
+} from 'react-icons/fa';
 
 function MarketItem({ item, user, userCards, onPurchase, showDetails = false, initialActiveTab = 'details' }) {
   const [showDetailsState, setShowDetailsState] = useState(showDetails);
@@ -551,27 +564,25 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
 function getCategoryIcon(category) {
   switch (category) {
     case 'Электроника':
-      return '📱';
+      return <FaLaptop />;
+    case 'Телефоны':
+      return <FaMobile />;
+    case 'Недвижимость':
+      return <FaHome />;
+    case 'Транспорт':
+      return <FaCar />;
     case 'Одежда':
-      return '👕';
-    case 'Обувь':
-      return '👟';
-    case 'Аксессуары':
-      return '👜';
+      return <FaTshirt />;
+    case 'Детские товары':
+      return <FaChild />;
     case 'Книги':
-      return '📚';
-    case 'Спорт':
-      return '🏀';
-    case 'Дом и сад':
-      return '🏠';
-    case 'Красота и здоровье':
-      return '💄';
-    case 'Игрушки':
-      return '🧸';
-    case 'Автотовары':
-      return '🚗';
+      return <FaBook />;
+    case 'Спорт и отдых':
+      return <FaFootballBall />;
+    case 'Инструменты':
+      return <FaTools />;
     default:
-      return '📦';
+      return <FaShoppingBag />;
   }
 }
 

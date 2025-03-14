@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CardDashboard from './CardDashboard';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 function VirtualCard({ card }) {
   const [showDetails, setShowDetails] = useState(false);
@@ -69,10 +70,7 @@ function VirtualCard({ card }) {
               </span>
             </div>
             <p className="security-note">
-              <svg width="16" height="16" viewBox="0 0 16 16" style={{ marginRight: '5px' }}>
-                <path fill="#c62828" d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
-                <path fill="#c62828" d="M7 3h2v7H7zm0 8h2v2H7z"/>
-              </svg>
+              <FaExclamationTriangle style={{ marginRight: '5px', color: '#c62828' }} />
               Никому не сообщайте данные вашей карты!
             </p>
             <button 

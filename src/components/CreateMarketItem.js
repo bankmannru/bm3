@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { createMarketItem } from '../firebase';
-
-const CATEGORIES = [
-  'Электроника',
-  'Одежда',
-  'Обувь',
-  'Аксессуары',
-  'Книги',
-  'Спорт',
-  'Дом и сад',
-  'Красота и здоровье',
-  'Игрушки',
-  'Автотовары',
-  'Другое'
-];
+import { 
+  FaShoppingBag, 
+  FaLaptop, 
+  FaMobile, 
+  FaHome, 
+  FaCar, 
+  FaTshirt, 
+  FaChild, 
+  FaBook, 
+  FaFootballBall, 
+  FaTools 
+} from 'react-icons/fa';
 
 const CONDITIONS = [
   'Новое',
   'Отличное',
   'Хорошее',
   'Удовлетворительное'
+];
+
+// Категории товаров с иконками
+const categories = [
+  { value: 'Электроника', label: 'Электроника', icon: <FaLaptop /> },
+  { value: 'Телефоны', label: 'Телефоны', icon: <FaMobile /> },
+  { value: 'Недвижимость', label: 'Недвижимость', icon: <FaHome /> },
+  { value: 'Транспорт', label: 'Транспорт', icon: <FaCar /> },
+  { value: 'Одежда', label: 'Одежда', icon: <FaTshirt /> },
+  { value: 'Детские товары', label: 'Детские товары', icon: <FaChild /> },
+  { value: 'Книги', label: 'Книги', icon: <FaBook /> },
+  { value: 'Спорт и отдых', label: 'Спорт и отдых', icon: <FaFootballBall /> },
+  { value: 'Инструменты', label: 'Инструменты', icon: <FaTools /> },
+  { value: 'Другое', label: 'Другое', icon: <FaShoppingBag /> }
 ];
 
 function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
@@ -176,8 +188,10 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
                 required
               >
                 <option value="">Выберите категорию</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categories.map(cat => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.icon} {cat.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -434,6 +448,11 @@ function CreateMarketItem({ user, userCards, onClose, onItemCreated }) {
         .success-message p {
           color: #616161;
           margin: 0;
+        }
+        
+        .category-icon {
+          margin-right: 8px;
+          vertical-align: middle;
         }
       `}</style>
     </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 function Footer() {
   return (
@@ -34,16 +35,16 @@ function Footer() {
         <div className="footer-section">
           <h4 className="footer-subtitle">Контакты</h4>
           <ul className="footer-list">
-            <li>📞 8-800-100-1000</li>
-            <li>✉️ support@mannru.ru</li>
-            <li>📍 г. Москва, ул. Банковская, 1</li>
+            <li><FaPhone className="contact-icon" /> 8-800-100-1000</li>
+            <li><FaEnvelope className="contact-icon" /> support@mannru.ru</li>
+            <li><FaMapMarkerAlt className="contact-icon" /> г. Москва, ул. Банковская, 1</li>
           </ul>
         </div>
       </div>
 
       <div className="footer-bottom">
         <p className="copyright">
-          © 2024 Банк Маннру. Все права защищены.
+          © 2025 Банк Маннру. Никакие права не защищены.
         </p>
       </div>
 
@@ -113,6 +114,11 @@ function Footer() {
         .copyright {
           opacity: 0.8;
           margin: 0;
+        }
+
+        .contact-icon {
+          margin-right: 8px;
+          color: rgba(255, 255, 255, 0.8);
         }
 
         @media (max-width: 768px) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Auth from './Auth';
 import { auth, logoutUser } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { FaBars, FaUser } from 'react-icons/fa';
 
 const navItems = [
   { name: 'Главная', path: '/' },
@@ -54,7 +55,7 @@ function Navbar() {
       <div className="navbar-container">
         <div className="navbar-brand">
           <button className="menu-button" onClick={toggleMenu}>
-            <span className="menu-icon">☰</span>
+            <FaBars className="menu-icon" />
           </button>
           <h1 className="brand-title">Банк Маннру</h1>
         </div>
@@ -70,7 +71,7 @@ function Navbar() {
         {user ? (
           <div className="user-actions">
             <button className="account-button" onClick={handleAuthClick}>
-              <span className="account-icon">👤</span>
+              <FaUser className="account-icon" />
               Личный кабинет
             </button>
             <button className="logout-button" onClick={handleLogoutClick}>
@@ -79,7 +80,7 @@ function Navbar() {
           </div>
         ) : (
           <button className="account-button" onClick={handleAuthClick}>
-            <span className="account-icon">👤</span>
+            <FaUser className="account-icon" />
             Личный кабинет
           </button>
         )}
@@ -180,6 +181,14 @@ function Navbar() {
 
         .logout-button:hover {
           background-color: #f5f5f5;
+        }
+
+        .menu-icon {
+          font-size: 1.5rem;
+        }
+        
+        .account-icon {
+          margin-right: 0.5rem;
         }
 
         @media (max-width: 768px) {

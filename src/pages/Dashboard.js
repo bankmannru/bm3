@@ -7,6 +7,7 @@ import CreateCard from '../components/CreateCard';
 import MarketTransactions from '../components/MarketTransactions';
 import UserChats from '../components/UserChats';
 import { Link } from 'react-router-dom';
+import { FaShoppingCart } from 'react-icons/fa';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -128,7 +129,9 @@ function Dashboard() {
                 )}
               </div>
             </div>
-            <div className="market-icon">🛒</div>
+            <div className="market-icon">
+              <FaShoppingCart />
+            </div>
           </div>
           
           <div className="market-sections">
@@ -288,6 +291,7 @@ function Dashboard() {
         .market-icon {
           font-size: 4rem;
           margin-left: 2rem;
+          color: #4caf50;
         }
         
         .market-sections {

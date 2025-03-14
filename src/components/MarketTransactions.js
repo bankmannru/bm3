@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { firestore } from '../firebase';
 import { collection, query, where, orderBy, getDocs, limit } from 'firebase/firestore';
+import { FaShoppingCart, FaMoneyBillWave } from 'react-icons/fa';
 
 function MarketTransactions({ userId }) {
   const [transactions, setTransactions] = useState([]);
@@ -208,7 +209,7 @@ function MarketTransactions({ userId }) {
               className={`transaction-item ${transaction.type}`}
             >
               <div className="transaction-icon">
-                {transaction.type === 'purchase' ? '🛒' : '💰'}
+                {transaction.type === 'purchase' ? <FaShoppingCart /> : <FaMoneyBillWave />}
               </div>
               <div className="transaction-details">
                 <div className="transaction-title">
@@ -324,6 +325,9 @@ function MarketTransactions({ userId }) {
         .transaction-icon {
           font-size: 1.5rem;
           margin-right: 1rem;
+          color: ${props => props.type === 'purchase' ? '#c62828' : '#2e7d32'};
+          display: flex;
+          align-items: center;
         }
         
         .transaction-details {

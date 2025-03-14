@@ -1,30 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaCreditCard, FaShoppingCart, FaMoneyBillWave, FaHome, FaMobileAlt } from 'react-icons/fa';
 
 const features = [
   {
-    icon: '💳',
+    icon: <FaCreditCard />,
     title: 'Банковские карты',
     description: 'Широкий выбор карт для всех ваших потребностей'
   },
   {
-    icon: '🛒',
+    icon: <FaShoppingCart />,
     title: 'Маркет',
     description: 'Покупайте и продавайте товары за маннрубли',
     link: '/market'
   },
   {
-    icon: '💰',
+    icon: <FaMoneyBillWave />,
     title: 'Вклады',
     description: 'Выгодные условия для сбережений и инвестиций'
   },
   {
-    icon: '🏠',
+    icon: <FaHome />,
     title: 'Ипотека',
     description: 'Доступные ипотечные программы для вашего жилья'
   },
   {
-    icon: '📱',
+    icon: <FaMobileAlt />,
     title: 'Онлайн банкинг',
     description: 'Управляйте финансами через удобное мобильное приложение'
   }
@@ -88,6 +89,7 @@ function Features() {
         .feature-icon {
           font-size: 3rem;
           margin-bottom: 1rem;
+          color: #1a237e;
         }
 
         .feature-title {
