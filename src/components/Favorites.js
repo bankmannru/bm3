@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Link } from 'react-router-dom';
-import { FaStar, FaRegStar, FaTrash, FaGamepad, FaHistory } from 'react-icons/fa';
-import { useToast } from './Toast';
+import { FaStar, FaRegStar, FaTrash, FaGamepad, FaHistory, FaListAlt, FaCalendarAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 function Favorites({ userId }) {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [recentGames, setRecentGames] = useState([]);
-  const toast = useToast();
 
   useEffect(() => {
     if (userId) {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { FaTrophy, FaLock, FaUnlock, FaCoins, FaGift, FaMedal, FaStar, FaCalendarAlt, FaGamepad, FaShoppingCart } from 'react-icons/fa';
-import { useToast } from './Toast';
+import { FaTrophy, FaLock, FaUnlock, FaCoins, FaGift, FaMedal, FaStar, FaCalendarAlt, FaGamepad, FaShoppingCart, FaAward, FaCheck, FaClock, FaCalendarCheck } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 // Определение достижений
 const ACHIEVEMENTS = [
@@ -77,7 +77,6 @@ function Achievements({ userId }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const toast = useToast();
 
   useEffect(() => {
     if (userId) {

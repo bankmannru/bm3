@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowDown, FaCoins, FaRedo, FaInfoCircle, FaCreditCard, FaCrown } from 'react-icons/fa';
-import { useToast } from './Toast';
+import { toast } from 'react-toastify';
 import { doc, updateDoc, getDoc, increment, collection, addDoc, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 import { firestore, auth, getUserCards, checkIsAdmin, db } from '../firebase';
 import Modal from './Modal';
@@ -22,7 +22,6 @@ const PullTheTabs = ({ userId, userBalance, onBalanceUpdate }) => {
   const [loadingCards, setLoadingCards] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
-  const toast = useToast();
   const cooldownInterval = useRef(null);
 
   // Стоимость одной игры

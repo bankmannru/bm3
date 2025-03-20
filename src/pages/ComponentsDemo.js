@@ -1,11 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { useToast } from '../components/Toast';
+import { FaCheck, FaTimes, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import Modal from '../components/Modal';
 import { ThemeContext } from '../App';
-import { FaInfoCircle, FaCheckCircle, FaExclamationTriangle, FaExclamationCircle, FaLightbulb } from 'react-icons/fa';
+import { FaLightbulb } from 'react-icons/fa';
 
 const ComponentsDemo = () => {
-  const toast = useToast();
   const { darkMode, toggleTheme } = useContext(ThemeContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalSize, setModalSize] = useState('medium');
@@ -36,10 +36,10 @@ const ComponentsDemo = () => {
         
         <div className="demo-buttons">
           <button className="demo-button success" onClick={showSuccessToast}>
-            <FaCheckCircle /> Успех
+            <FaCheck /> Успех
           </button>
           <button className="demo-button error" onClick={showErrorToast}>
-            <FaExclamationCircle /> Ошибка
+            <FaTimes /> Ошибка
           </button>
           <button className="demo-button info" onClick={showInfoToast}>
             <FaInfoCircle /> Информация
@@ -99,7 +99,7 @@ const ComponentsDemo = () => {
           
           <div className="modal-features">
             <div className="feature">
-              <FaCheckCircle className="feature-icon" />
+              <FaCheck className="feature-icon" />
               <div className="feature-text">
                 <h4>Закрытие по Escape</h4>
                 <p>Нажмите клавишу Escape для закрытия</p>
@@ -107,7 +107,7 @@ const ComponentsDemo = () => {
             </div>
             
             <div className="feature">
-              <FaCheckCircle className="feature-icon" />
+              <FaCheck className="feature-icon" />
               <div className="feature-text">
                 <h4>Закрытие по клику вне окна</h4>
                 <p>Кликните за пределами окна для закрытия</p>
@@ -115,7 +115,7 @@ const ComponentsDemo = () => {
             </div>
             
             <div className="feature">
-              <FaCheckCircle className="feature-icon" />
+              <FaCheck className="feature-icon" />
               <div className="feature-text">
                 <h4>Адаптивный дизайн</h4>
                 <p>Автоматически адаптируется под размер экрана</p>

@@ -7,7 +7,7 @@ import Achievements from '../components/Achievements';
 import GameHistory from '../components/GameHistory';
 import Footer from '../components/Footer';
 import { FaGamepad, FaCoins, FaHistory, FaTrophy, FaMedal } from 'react-icons/fa';
-import { useToast } from '../components/Toast';
+import { toast } from 'react-toastify';
 
 function GamesPage() {
   const [user, setUser] = useState(null);
@@ -15,7 +15,6 @@ function GamesPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pull-tabs');
   const [userBalance, setUserBalance] = useState(0);
-  const toast = useToast();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {

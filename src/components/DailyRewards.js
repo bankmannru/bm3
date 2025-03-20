@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { FaGift, FaCalendarAlt, FaStar, FaTrophy, FaMedal, FaCoins } from 'react-icons/fa';
-import { useToast } from './Toast';
+import { toast } from 'react-toastify';
 
 const REWARDS = [
   { day: 1, amount: 50, icon: <FaGift />, color: '#4285F4', label: 'День 1' },
@@ -155,7 +155,6 @@ function DailyRewards({ userId }) {
   const [claiming, setClaiming] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [claimedReward, setClaimedReward] = useState(null);
-  const toast = useToast();
 
   useEffect(() => {
     const fetchRewardsData = async () => {
@@ -192,7 +191,7 @@ function DailyRewards({ userId }) {
     };
     
     fetchRewardsData();
-  }, [userId, toast]);
+  }, [userId]);
 
   const isEligibleForClaim = () => {
     if (!rewardsData || !rewardsData.lastClaimTimestamp) {
