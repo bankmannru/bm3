@@ -12,7 +12,8 @@ import {
   FaBook, 
   FaFootballBall, 
   FaTools, 
-  FaQuestion 
+  FaQuestion,
+  FaCrown
 } from 'react-icons/fa';
 
 function MarketItem({ item, user, userCards, onPurchase, showDetails = false, initialActiveTab = 'details' }) {
@@ -178,10 +179,19 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
               <span className="category-icon">{getCategoryIcon(item.category)}</span>
             </div>
           )}
+          {item.isPremium && (
+            <div className="premium-badge">
+              <FaCrown className="premium-icon" />
+              <span>Премиум</span>
+            </div>
+          )}
         </div>
         
         <div className="item-info">
-          <h3 className="item-title">{item.title}</h3>
+          <h3 className="item-title">
+            {item.title}
+            {item.isPremium && <FaCrown className="title-premium-icon" />}
+          </h3>
           <p className="item-price">{formatPrice(item.price)}</p>
           <p className="item-date">Опубликовано: {formatDate(item.createdAt)}</p>
         </div>
@@ -208,6 +218,13 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
           
           {activeTab === 'details' ? (
             <div className="item-details">
+              {item.isPremium && (
+                <div className="premium-item-badge">
+                  <FaCrown className="premium-badge-icon" />
+                  <span>Премиум-объявление</span>
+                </div>
+              )}
+              
               <div className="item-description">
                 <h4>Описание</h4>
                 <p>{item.description}</p>
@@ -315,18 +332,28 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
         .market-item {
           background-color: white;
           border-radius: 8px;
-          overflow: hidden;
+          overflow: visible;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s, box-shadow 0.3s;
+          transition: all 0.3s ease;
+          position: relative;
+          z-index: 1;
+          transform-origin: center center;
+          will-change: transform, box-shadow;
+          margin-bottom: 10px;
         }
         
         .market-item:hover {
           transform: translateY(-5px);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
         
         .item-preview {
           cursor: pointer;
+          position: relative;
+          z-index: 2;
+          border-radius: 8px;
+          overflow: hidden;
+          background-color: white;
         }
         
         .item-image {
@@ -336,6 +363,7 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
           align-items: center;
           justify-content: center;
           overflow: hidden;
+          position: relative;
         }
         
         .item-image img {
@@ -360,6 +388,9 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
         
         .item-info {
           padding: 1.5rem;
+          background-color: white;
+          position: relative;
+          z-index: 2;
         }
         
         .item-title {
@@ -386,6 +417,10 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
         
         .item-details-container {
           border-top: 1px solid #e0e0e0;
+          position: relative;
+          z-index: 2;
+          border-radius: 0 0 8px 8px;
+          overflow: hidden;
         }
         
         .item-tabs {
@@ -554,6 +589,50 @@ function MarketItem({ item, user, userCards, onPurchase, showDetails = false, in
         
         .item-chat-container {
           padding: 0;
+        }
+        
+        .premium-badge {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background-color: rgba(255, 193, 7, 0.9);
+          color: #212121;
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+        
+        .premium-icon {
+          color: #212121;
+          font-size: 0.9rem;
+        }
+        
+        .title-premium-icon {
+          color: #ffc107;
+          font-size: 1rem;
+          margin-left: 0.5rem;
+          vertical-align: middle;
+        }
+        
+        .premium-item-badge {
+          background-color: #fff8e1;
+          color: #ff8f00;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 500;
+        }
+        
+        .premium-badge-icon {
+          color: #ffc107;
+          font-size: 1.1rem;
         }
       `}</style>
     </div>

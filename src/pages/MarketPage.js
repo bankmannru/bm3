@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
 import Market from '../components/Market';
 import Footer from '../components/Footer';
 import AlphaInfo from '../components/AlphaInfo';
@@ -84,8 +83,6 @@ function MarketPage() {
 
   return (
     <div className="market-page">
-      <Navbar />
-      
       {alphaStatus.isAlpha && (
         <div className="alpha-banner">
           <FaExclamationTriangle className="alpha-icon" />
@@ -129,7 +126,6 @@ function MarketPage() {
           flex-direction: column;
           background-color: #f5f5f5;
           position: relative;
-          padding-top: 3rem;
         }
         
         .alpha-banner {

@@ -169,24 +169,25 @@ function CardDashboard({ card, onClose }) {
           {activeTab === 'info' && (
             <div className="info-tab">
               <div className="card-preview" style={{ background: card.color }}>
-                <div className="card-header">
+                <div className="card-preview-header">
                   <div className="bank-logo">МАННРУ БАНК</div>
                   <div className="card-chip">
-                    <img src="/chip.svg" alt="Чип карты" width="50" height="40" />
+                    <span className="chip-icon">💳</span>
                   </div>
                 </div>
                 
-                <div className="card-info">
-                  <div className="card-number">{card.cardNumber.match(/.{1,4}/g).join(' ')}</div>
-                  <div className="card-details-row">
-                    <div className="card-holder">
-                      <div className="card-label">ДЕРЖАТЕЛЬ КАРТЫ</div>
-                      <div className="card-name">{card.firstName} {card.lastName}</div>
-                    </div>
-                    <div className="card-expiry-section">
-                      <div className="card-label">СРОК ДЕЙСТВИЯ</div>
-                      <div className="card-expiry">{card.expiryDate}</div>
-                    </div>
+                <div className="card-number-display">
+                  {card.cardNumber.match(/.{1,4}/g).join(' ')}
+                </div>
+                
+                <div className="card-preview-footer">
+                  <div className="card-holder-info">
+                    <div className="card-label">ДЕРЖАТЕЛЬ КАРТЫ</div>
+                    <div className="card-value">{card.firstName} {card.lastName}</div>
+                  </div>
+                  <div className="card-expiry-info">
+                    <div className="card-label">СРОК ДЕЙСТВИЯ</div>
+                    <div className="card-value">{card.expiryDate}</div>
                   </div>
                 </div>
               </div>
@@ -527,6 +528,10 @@ function CardDashboard({ card, onClose }) {
           overflow: hidden;
           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
           aspect-ratio: 1.6 / 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          margin-bottom: 1.5rem;
         }
         
         .card-preview::before {
@@ -540,14 +545,41 @@ function CardDashboard({ card, onClose }) {
           pointer-events: none;
         }
         
+        .card-preview-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .bank-logo {
+          font-size: 1.3rem;
+          font-weight: 700;
+          letter-spacing: 1px;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-chip {
+          background-color: rgba(255, 255, 255, 0.2);
+          border-radius: 4px;
+          padding: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .chip-icon {
+          font-size: 1.5rem;
+        }
+        
         .card-number-display {
           font-size: 1.4rem;
           letter-spacing: 2px;
           margin: 1.5rem 0;
           font-family: 'Roboto Mono', monospace;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
-        .card-details {
+        .card-preview-footer {
           display: flex;
           justify-content: space-between;
         }
@@ -561,11 +593,15 @@ function CardDashboard({ card, onClose }) {
           font-size: 0.7rem;
           opacity: 0.8;
           margin-bottom: 0.25rem;
+          letter-spacing: 1px;
         }
         
         .card-value {
           font-size: 1rem;
           font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
         .info-section {

@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Разрешаем доступ ко всем данным для аутентифицированных пользователей
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Разрешаем доступ к настройкам alpha всем пользователям (даже неаутентифицированным)
+    match /settings/alpha {
+      allow read: if true;
+    }
+    
+    // Разрешаем доступ к данным пользователя только самому пользователю
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Администраторы могут читать данные всех пользователей
+      allow read: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // Разрешаем доступ к картам только владельцу карты
+    match /cards/{cardId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      
+      // Администраторы могут читать данные всех карт
+      allow read: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // Разрешаем доступ к транзакциям только участникам транзакции
+    match /transactions/{transactionId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.senderId || 
+        request.auth.uid == resource.data.receiverId
+      );
+      
+      // Администраторы могут читать все транзакции
+      allow read: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      
+      // Создание транзакций разрешено аутентифицированным пользователям
+      allow create: if request.auth != null;
+    }
+    
+    // Разрешаем доступ к товарам на маркете всем аутентифицированным пользователям
+    match /marketItems/{itemId} {
+      allow read: if request.auth != null;
+      
+      // Создание и удаление товаров разрешено только владельцу
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.sellerId;
+    }
+    
+    // Разрешаем доступ к сообщениям чата только участникам чата
+    match /chatMessages/{messageId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.senderId || 
+        request.auth.uid == resource.data.receiverId
+      );
+      
+      // Создание сообщений разрешено аутентифицированным пользователям
+      allow create: if request.auth != null;
+      
+      // Обновление сообщений (например, отметка о прочтении) разрешена только получателю
+      allow update: if request.auth != null && request.auth.uid == resource.data.receiverId;
+    }
+    
+    // Разрешаем доступ к статусу администратора только самому администратору
+    match /admins/{adminId} {
+      allow read: if request.auth != null && request.auth.uid == adminId;
+      
+      // Создание администраторов разрешено только через серверные функции
+      allow create: if false;
+    }
+    
+    // Разрешаем доступ к общим настройкам всем аутентифицированным пользователям
+    match /settings/{settingId} {
+      allow read: if request.auth != null;
+      
+      // Изменение настроек разрешено только администраторам
+      allow write: if request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+  }
+} 

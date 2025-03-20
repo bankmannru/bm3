@@ -450,11 +450,23 @@ function Market({ user, initialSelectedItem = null, initialShowChat = false }) {
 
         .market-item-wrapper {
           cursor: pointer;
-          transition: transform 0.3s;
+          transition: transform 0.3s, box-shadow 0.3s;
+          position: relative;
         }
-
+        
         .market-item-wrapper:hover {
           transform: translateY(-4px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Стили для премиум-объявлений в сетке */
+        .market-item-wrapper .market-item:has(.premium-badge) {
+          border: 2px solid #ffc107;
+          box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+        }
+        
+        .market-item-wrapper:hover .market-item:has(.premium-badge) {
+          box-shadow: 0 8px 16px rgba(255, 193, 7, 0.3);
         }
 
         .loading, .error-message, .no-items {

@@ -167,6 +167,8 @@ function Hero() {
           max-width: 800px;
           margin: 0 auto;
           padding-top: 2rem;
+          animation: fadeIn 0.5s ease-out;
+          will-change: opacity, transform;
         }
 
         .hero-title {
@@ -174,18 +176,24 @@ function Hero() {
           font-weight: bold;
           margin-bottom: 1.5rem;
           line-height: 1.2;
+          animation: slideIn 0.4s ease-out;
+          will-change: opacity, transform;
         }
 
         .hero-subtitle {
           font-size: 1.25rem;
           margin-bottom: 2rem;
           opacity: 0.9;
+          animation: slideIn 0.5s ease-out;
+          will-change: opacity, transform;
         }
 
         .hero-buttons {
           display: flex;
           gap: 1rem;
           justify-content: center;
+          animation: fadeIn 0.6s ease-out;
+          will-change: opacity, transform;
         }
 
         .primary-button {
@@ -247,6 +255,16 @@ function Hero() {
           .alpha-text {
             font-size: 0.8rem;
           }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(-10px); }
+          to { opacity: 1; transform: translateX(0); }
         }
       `}</style>
     </section>

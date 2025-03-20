@@ -22,34 +22,106 @@ function ItemChat({ itemId, userId, userName, sellerId }) {
   const chatRef = useRef(null);
   const [isSending, setIsSending] = useState(false);
 
-  // Загрузка сообщений при монтировании компонента
+  // Загрузка сообщений при монтировании компонента и настройка подписки на обновления
   useEffect(() => {
     if (itemId && userId) {
       setLoading(true);
       setError(null);
       
-      const loadMessages = async () => {
-        try {
-          const result = await getItemChatMessages(itemId, userId);
-          
+      // Сначала загружаем сообщения через функцию с обработкой ошибок
+      getItemChatMessages(itemId, userId)
+        .then(result => {
           if (result.success) {
             setMessages(result.messages);
+            setLoading(false);
             
-            // Маркируем сообщения как прочитанные при загрузке
-            await markMessagesAsRead(itemId, userId);
+            // Если это тестовые данные, не настраиваем подписку
+            if (result.mockData) {
+              console.log('Используются тестовые данные для чата из-за проблем с доступом к Firestore');
+              return;
+            }
+            
+            // Настраиваем подписку только если получили реальные данные
+            setupChatSubscription();
           } else {
             setError(result.error || 'Не удалось загрузить сообщения');
+            setLoading(false);
           }
-        } catch (err) {
+        })
+        .catch(err => {
           console.error('Ошибка при загрузке сообщений:', err);
           setError('Произошла ошибка при загрузке сообщений');
-        } finally {
           setLoading(false);
-        }
-      };
-      
-      loadMessages();
+        });
     }
+    
+    // Функция для настройки подписки на обновления чата
+    const setupChatSubscription = () => {
+      try {
+        // Создаем запрос для получения сообщений
+        const messagesQuery = query(
+          collection(firestore, "itemChats"),
+          where("itemId", "==", itemId),
+          orderBy("timestamp", "asc"),
+          limit(100)
+        );
+        
+        // Подписываемся на обновления сообщений в реальном времени
+        const unsubscribe = onSnapshot(messagesQuery, 
+          (snapshot) => {
+            // Фильтруем сообщения на стороне клиента
+            const updatedMessages = snapshot.docs
+              .map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              }))
+              .filter(msg => msg.participants && msg.participants.includes(userId));
+            
+            setMessages(updatedMessages);
+            setLoading(false);
+            
+            // Маркируем сообщения как прочитанные при получении новых
+            markMessagesAsRead(itemId, userId).catch(err => {
+              console.error('Ошибка при маркировке сообщений как прочитанных:', err);
+            });
+            
+            // Прокручиваем к последнему сообщению при получении новых
+            setTimeout(scrollToBottom, 100);
+          },
+          (err) => {
+            console.error('Ошибка при подписке на обновления сообщений:', err);
+            
+            // Проверяем, связана ли ошибка с доступом
+            if (
+              err.code === 'permission-denied' || 
+              err.message.includes('Missing or insufficient permissions') ||
+              err.message.includes('PERMISSION_DENIED')
+            ) {
+              setError('Ошибка доступа к данным. Используются тестовые данные.');
+            } else {
+              setError('Произошла ошибка при загрузке сообщений');
+            }
+            
+            setLoading(false);
+          }
+        );
+        
+        // Возвращаем функцию отписки
+        return unsubscribe;
+      } catch (err) {
+        console.error('Ошибка при настройке подписки на чат:', err);
+        setError('Произошла ошибка при настройке обновлений чата');
+        setLoading(false);
+        return () => {}; // Возвращаем пустую функцию отписки
+      }
+    };
+    
+    // Отписываемся при размонтировании компонента
+    let unsubscribe = () => {};
+    if (!loading && !error) {
+      unsubscribe = setupChatSubscription() || (() => {});
+    }
+    return () => unsubscribe();
   }, [itemId, userId]);
   
   // Прокрутка к последнему сообщению
@@ -80,8 +152,8 @@ function ItemChat({ itemId, userId, userName, sellerId }) {
       
       if (result.success) {
         setNewMessage('');
-        // Прокручиваем к последнему сообщению после добавления нового
-        setTimeout(scrollToBottom, 100);
+        // Прокрутка к последнему сообщению произойдет автоматически 
+        // благодаря подписке на обновления
       } else {
         setError(result.error || 'Не удалось отправить сообщение');
       }
